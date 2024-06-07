@@ -1,6 +1,7 @@
 package gotodoist
 
 import (
+	"context"
 	"fmt"
 	"net/http"
 )
@@ -13,29 +14,32 @@ type Label struct {
 	Order      int    `json:"order"`
 }
 
-func (c *Client) GetLabels() ([]Label, error) {
+func (c *Client) GetLabels(ctx context.Context) ([]Label, error) {
 	return doGetRequest[[]Label](
+		ctx,
 		http.DefaultClient,
 		c.apiToken,
-		fmt.Sprintf("%s/rest/v2/labels", _api_endpoint),
-		httpRequestOptions{},
+		fmt.Sprintf("%s/rest/v2/labels", _apiEndpoint),
+		nil,
 	)
 }
 
-func (c *Client) GetLabel(id string) (*Label, error) {
+func (c *Client) GetLabel(ctx context.Context, id string) (*Label, error) {
 	return doGetRequest[*Label](
+		ctx,
 		http.DefaultClient,
 		c.apiToken,
-		fmt.Sprintf("%s/rest/v2/labels/%s", _api_endpoint, id),
-		httpRequestOptions{},
+		fmt.Sprintf("%s/rest/v2/labels/%s", _apiEndpoint, id),
+		nil,
 	)
 }
 
-func (c *Client) GetSharedLabels() ([]string, error) {
+func (c *Client) GetSharedLabels(ctx context.Context) ([]string, error) {
 	return doGetRequest[[]string](
+		ctx,
 		http.DefaultClient,
 		c.apiToken,
-		fmt.Sprintf("%s/rest/v2/labels/shared", _api_endpoint),
-		httpRequestOptions{},
+		fmt.Sprintf("%s/rest/v2/labels/shared", _apiEndpoint),
+		nil,
 	)
 }

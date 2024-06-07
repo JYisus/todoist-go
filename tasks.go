@@ -1,10 +1,9 @@
 package gotodoist
 
 import (
+	"context"
 	"fmt"
 	"net/http"
-
-	"github.com/google/go-querystring/query"
 )
 
 type Task struct {
@@ -50,29 +49,40 @@ type GetTasksOpts struct {
 	IDs       []string `url:"ids,comma,omitempty"`
 }
 
-func (c *Client) GetTasks(opts *GetTasksOpts) ([]Task, error) {
-	queryParams, err := query.Values(opts)
+func (c Client) GetTasks(ctx context.Context, opts *GetTasksOpts) ([]Task, error) {
+	req, err := c.newRequest(http.MethodGet, fmt.Sprintf("%s/rest/v2/tasks", _apiEndpoint), nil)
 	if err != nil {
 		return nil, err
 	}
 
-	fmt.Println(queryParams.Encode())
+	if err := c.setQueryParams(req, opts); err != nil {
+		return nil, err
+	}
 
-	return doGetRequest[[]Task](
+	var tasks []Task
+
+	if err := c.doRequest(ctx, req, tasks); err != nil {
+		return nil, err
+	}
+
+	return tasks, nil
+}
+
+func (c *Client) GetTask(ctx context.Context, id string) (*Task, error) {
+	return doGetRequest[*Task](
+		ctx,
 		http.DefaultClient,
 		c.apiToken,
-		fmt.Sprintf("%s/rest/v2/tasks", _api_endpoint),
-		httpRequestOptions{
-			QueryParams: queryParams,
-		},
+		fmt.Sprintf("%s/rest/v2/tasks/%s", _apiEndpoint, id),
+		nil,
 	)
 }
 
-func (c *Client) GetTask(id string) (*Task, error) {
-	return doGetRequest[*Task](
-		http.DefaultClient,
-		c.apiToken,
-		fmt.Sprintf("%s/rest/v2/tasks/%s", _api_endpoint, id),
-		httpRequestOptions{},
-	)
+type AddTaskOpts struct {
+	ProjectID string `json:"project_id"`
+}
+
+func (c *Client) AddTask(ctx context.Context, content string, opts *AddTaskOpts) error {
+
+	return nil
 }

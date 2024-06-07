@@ -16,8 +16,8 @@ func (c *Client) GetSections() ([]Section, error) {
 	return doGetRequest[[]Section](
 		http.DefaultClient,
 		c.apiToken,
-		fmt.Sprintf("%s/rest/v2/sections", _api_endpoint),
-		httpRequestOptions{},
+		fmt.Sprintf("%s/rest/v2/sections", _apiEndpoint),
+		nil,
 	)
 }
 
@@ -25,7 +25,7 @@ func (c *Client) GetSection(id string) (*Section, error) {
 	return doGetRequest[*Section](
 		http.DefaultClient,
 		c.apiToken,
-		fmt.Sprintf("%s/rest/v2/sections/%s", _api_endpoint, id),
-		httpRequestOptions{},
+		fmt.Sprintf("%s/rest/v2/sections/%s", _apiEndpoint, id),
+		nil,
 	)
 }

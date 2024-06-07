@@ -1,6 +1,7 @@
 package gotodoist
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"net/http"
@@ -41,7 +42,7 @@ func (o GetCommentsOpts) Validate() error {
 	return nil
 }
 
-func (c *Client) GetComments(opts GetCommentsOpts) ([]Comment, error) {
+func (c *Client) GetComments(ctx context.Context, opts GetCommentsOpts) ([]Comment, error) {
 	if err := opts.Validate(); err != nil {
 		return nil, err
 	}
@@ -52,9 +53,10 @@ func (c *Client) GetComments(opts GetCommentsOpts) ([]Comment, error) {
 	}
 
 	return doGetRequest[[]Comment](
+		ctx,
 		http.DefaultClient,
 		c.apiToken,
-		fmt.Sprintf("%s/rest/v2/comments", _api_endpoint),
-		httpRequestOptions{QueryParams: queryParams},
+		fmt.Sprintf("%s/rest/v2/comments", _apiEndpoint),
+		&httpRequestOptions{QueryParams: queryParams},
 	)
 }

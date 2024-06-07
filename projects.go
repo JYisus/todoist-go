@@ -1,6 +1,7 @@
 package gotodoist
 
 import (
+	"context"
 	"fmt"
 	"net/http"
 )
@@ -20,15 +21,22 @@ type Project struct {
 	ParentID       *string `json:"parent_int"`
 }
 
-func (c *Client) GetProjects() ([]Project, error) {
+func (c *Client) GetProjects(ctx context.Context) ([]Project, error) {
 	return doGetRequest[[]Project](
+		ctx,
 		http.DefaultClient,
 		c.apiToken,
-		fmt.Sprintf("%s/rest/v2/projects", _api_endpoint),
-		httpRequestOptions{},
+		fmt.Sprintf("%s/rest/v2/projects", _apiEndpoint),
+		nil,
 	)
 }
 
-func (c *Client) GetProject(id string) (*Project, error) {
-	return doGetRequest[*Project](http.DefaultClient, c.apiToken, fmt.Sprintf("%s/rest/v2/projects/%s", _api_endpoint, id), httpRequestOptions{})
+func (c *Client) GetProject(ctx context.Context, id string) (*Project, error) {
+	return doGetRequest[*Project](
+		ctx,
+		http.DefaultClient,
+		c.apiToken,
+		fmt.Sprintf("%s/rest/v2/projects/%s", _apiEndpoint, id),
+		nil,
+	)
 }

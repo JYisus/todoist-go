@@ -28,12 +28,12 @@ import (
 	"context"
 	"log"
 
-	gotodoist "github.com/jyisus/todoist-go"
+	"github.com/jyisus/todoist-go"
 )
 
 func main() {
 	ctx := context.Background()
-	c := gotodoist.NewClient("<your-todoist-token>")
+	c := todoist.NewClient("<your-todoist-token>")
 
 	tasks, err := c.GetTasks(ctx, nil)
 	if err != nil {

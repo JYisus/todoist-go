@@ -16,7 +16,7 @@ go get github.com/jyisus/go-todoist
 To update the SDK:
 
 ```bash
-go get -u github.com/jyisus/go-todoist
+go get -u github.com/jyisus/todoist-go
 ```
 
 ### Examples
@@ -28,7 +28,7 @@ import (
 	"context"
 	"log"
 
-	gotodoist "github.com/jyisus/go-todoist"
+	gotodoist "github.com/jyisus/todoist-go"
 )
 
 func main() {

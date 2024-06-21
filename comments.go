@@ -1,4 +1,4 @@
-package gotodoist
+package todoist
 
 import (
 	"context"

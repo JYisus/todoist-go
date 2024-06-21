@@ -1,4 +1,4 @@
-module github.com/jyisus/go-todoist
+module github.com/jyisus/todoist-go
 
 go 1.22.0
 

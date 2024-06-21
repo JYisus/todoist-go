@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
 	"net/http"
@@ -28,11 +29,11 @@ func NewClient(apiToken string) *Client {
 	}
 }
 
-func (c Client) newRequest(method, endpoint string, body []any) (*http.Request, error) {
+func (c Client) newRequest(method, endpoint string, body any) (*http.Request, error) {
 	var bodyBuffer io.ReadWriter
 	if body != nil {
-		bodyBuffer := &bytes.Buffer{}
-		if err := json.NewEncoder(bodyBuffer).Encode(bodyBuffer); err != nil {
+		bodyBuffer = &bytes.Buffer{}
+		if err := json.NewEncoder(bodyBuffer).Encode(body); err != nil {
 			return nil, fmt.Errorf("parsing body: %w", err)
 		}
 	}
@@ -62,13 +63,23 @@ func (c Client) setQueryParams(req *http.Request, opts any) error {
 func (c Client) doRequest(ctx context.Context, req *http.Request, v any) error {
 	req = req.WithContext(ctx)
 
-	// req.URL.RawQuery = opts.QueryParams.Encode()
-
 	res, err := c.httpClient.Do(req)
 	if err != nil {
 		return err
 	}
 	defer res.Body.Close()
+
+	if res.StatusCode >= 300 {
+		return errors.New(res.Status)
+	}
+
+	if res.StatusCode == http.StatusNoContent {
+		return nil
+	}
+
+	if res.StatusCode != 200 {
+		return fmt.Errorf("unknown status code: %s", res.Status)
+	}
 
 	body, err := io.ReadAll(res.Body)
 	if err != nil {

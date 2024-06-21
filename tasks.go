@@ -61,7 +61,7 @@ func (c Client) GetTasks(ctx context.Context, opts *GetTasksOpts) ([]Task, error
 
 	var tasks []Task
 
-	if err := c.doRequest(ctx, req, tasks); err != nil {
+	if err := c.doRequest(ctx, req, &tasks); err != nil {
 		return nil, err
 	}
 
@@ -69,20 +69,75 @@ func (c Client) GetTasks(ctx context.Context, opts *GetTasksOpts) ([]Task, error
 }
 
 func (c *Client) GetTask(ctx context.Context, id string) (*Task, error) {
-	return doGetRequest[*Task](
-		ctx,
-		http.DefaultClient,
-		c.apiToken,
-		fmt.Sprintf("%s/rest/v2/tasks/%s", _apiEndpoint, id),
-		nil,
-	)
+	req, err := c.newRequest(http.MethodGet, fmt.Sprintf("%s/rest/v2/tasks/%s", _apiEndpoint, id), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	var task *Task
+
+	if err := c.doRequest(ctx, req, &task); err != nil {
+		return nil, err
+	}
+
+	return task, nil
 }
 
 type AddTaskOpts struct {
+	Content   string `json:"content"`
 	ProjectID string `json:"project_id"`
 }
 
-func (c *Client) AddTask(ctx context.Context, content string, opts *AddTaskOpts) error {
+func (c Client) AddTask(ctx context.Context, opts *AddTaskOpts) (*Task, error) {
+	req, err := c.newRequest(http.MethodPost, fmt.Sprintf("%s/rest/v2/tasks", _apiEndpoint), opts)
+	if err != nil {
+		return nil, err
+	}
+
+	var task *Task
+
+	if err := c.doRequest(ctx, req, &task); err != nil {
+		return nil, err
+	}
+
+	return task, nil
+}
+
+func (c Client) CloseTask(ctx context.Context, taskID string) error {
+	req, err := c.newRequest(http.MethodPost, fmt.Sprintf("%s/rest/v2/tasks/%s/close", _apiEndpoint, taskID), nil)
+	if err != nil {
+		return err
+	}
+
+	if err := c.doRequest(ctx, req, nil); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (c Client) ReopenTask(ctx context.Context, taskID string) error {
+	req, err := c.newRequest(http.MethodPost, fmt.Sprintf("%s/rest/v2/tasks/%s/reopen", _apiEndpoint, taskID), nil)
+	if err != nil {
+		return err
+	}
+
+	if err := c.doRequest(ctx, req, nil); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (c Client) DeleteTask(ctx context.Context, taskID string) error {
+	req, err := c.newRequest(http.MethodDelete, fmt.Sprintf("%s/rest/v2/tasks/%s", _apiEndpoint, taskID), nil)
+	if err != nil {
+		return err
+	}
+
+	if err := c.doRequest(ctx, req, nil); err != nil {
+		return err
+	}
 
 	return nil
 }
